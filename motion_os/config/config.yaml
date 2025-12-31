@@ -1,0 +1,108 @@
+# Motion OS Phase 1 Configuration
+
+# System Settings
+system:
+  device: "cuda"  # cuda, cpu, mps
+  num_workers: 4
+  output_dir: "outputs"
+
+# Video Processing
+video:
+  fps: 30
+  resolution: [1920, 1080]
+  supported_formats: [".mp4", ".avi", ".mov"]
+
+# WHAM Model Settings
+wham:
+  checkpoint_path: "models/wham/checkpoint.pth"
+  batch_size: 1
+  use_global_coordinates: true
+  detect_foot_contact: true
+
+# SAM 3D Body Settings
+sam3d:
+  checkpoint_path: "models/sam3d/checkpoint.pth"
+  enable_segmentation: true
+
+# Coordinate Transformation
+coordinate_transform:
+  # Reference height in meters (average human height for calibration)
+  reference_height_m: 1.70
+  # Camera parameters (will be auto-calibrated if not provided)
+  focal_length: null
+  principal_point: null
+
+# Physics-Informed Refinement
+physics:
+  # Bone Length Constraint
+  bone_constraint:
+    enabled: true
+    weight: 10.0  # L2 loss weight
+    tolerance: 0.01  # meters
+
+  # Zero Velocity Update (ZUPT)
+  zupt:
+    enabled: true
+    velocity_threshold: 0.02  # m/s
+    contact_threshold: 0.05  # meters from ground
+    weight: 5.0
+
+  # Smoothing
+  smoothing:
+    enabled: true
+    method: "savgol"  # savitzky-golay
+    window_length: 11
+    polyorder: 3
+
+  # Optimization
+  optimization:
+    max_iterations: 100
+    learning_rate: 0.01
+    convergence_threshold: 1e-4
+
+# Biomechanical Analysis
+biomechanics:
+  # Gait Cycle Detection
+  gait_cycle:
+    heel_strike_threshold: 0.03  # meters
+    toe_off_threshold: 0.05  # meters
+    min_cycle_duration: 0.5  # seconds
+
+  # Joint Angles
+  joints:
+    - name: "hip"
+      parent: "pelvis"
+      child: "femur"
+    - name: "knee"
+      parent: "femur"
+      child: "tibia"
+    - name: "ankle"
+      parent: "tibia"
+      child: "foot"
+
+  # Planes for angle calculation
+  planes:
+    - "sagittal"  # Flexion/Extension
+    - "coronal"   # Abduction/Adduction
+    - "transverse"  # Internal/External Rotation
+
+# Output Settings
+output:
+  # Data formats
+  save_csv: true
+  save_json: true
+  save_npz: true
+
+  # Visualization
+  generate_graphs: true
+  generate_video: true
+  overlay_skeleton: true
+  show_metrics: true
+
+  # Graph settings
+  graph_dpi: 300
+  graph_format: "png"
+
+  # Video settings
+  video_codec: "mp4v"
+  video_quality: 95
