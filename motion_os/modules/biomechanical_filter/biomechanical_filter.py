@@ -203,7 +203,7 @@ class BiomechanicalFilter:
         optimizer = optim.Adam([joints_tensor], lr=self.optimization_config['learning_rate'])
 
         max_iterations = self.optimization_config['max_iterations']
-        convergence_threshold = self.optimization_config['convergence_threshold']
+        convergence_threshold = float(self.optimization_config['convergence_threshold'])
 
         prev_loss = float('inf')
 
